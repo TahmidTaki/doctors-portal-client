@@ -1,47 +1,53 @@
-import React, { useContext, useState } from "react";
+import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 
-const Login = () => {
-  const { signIn } = useContext(AuthContext);
-  const [loginError, setLoginError] = useState("");
-
+const SignUp = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
   } = useForm();
-  const [data, setData] = useState("");
-  const onSubmit = (values) => {
-    setLoginError("");
-    // console.log(values.email, values.password);
-    signIn(values.email, values.password)
+
+  const { createUser } = useContext(AuthContext);
+
+  const handleSignUp = (data) => {
+    console.log(data);
+    createUser(data.email, data.password)
       .then((res) => {
         const user = res.user;
         console.log(user);
       })
-      .catch((err) => {
-        console.log(err);
-        setLoginError(err.message);
-      });
+      .then((err) => console.log(err));
   };
-
   return (
     <div className="flex justify-center items-center">
       <div>
-        <h2 className="texl-4xl text-center">Log In</h2>
-        <form className="form-control w-full" onSubmit={handleSubmit(onSubmit)}>
+        <h2 className="texl-4xl text-center">Register</h2>
+        <form className="form-control w-full" onSubmit={handleSubmit(handleSignUp)}>
           {/* register your input into the hook by invoking the "register" function */}
+          <label className="label">
+            <span className="label-text">Your Name</span>
+          </label>
+          <input
+            type="text"
+            className="input input-bordered w-full"
+            defaultValue="Name"
+            {...register("name")}
+          />
+
           <label className="label">
             <span className="label-text">Your email</span>
           </label>
           <input
+            type="email"
             className="input input-bordered w-full"
             defaultValue="email"
-            {...register("email", { required: "email is required" })}
+            {...register("email", {
+              required: true,
+            })}
           />
-          {errors.mail && <p role="alert">{errors.email?.message}</p>}
 
           <label className="label">
             <span className="label-text">Your Password</span>
@@ -51,34 +57,26 @@ const Login = () => {
             type="password"
             defaultValue=""
             {...register("password", {
-              required: true,
-              minLength: {
-                value: 6,
-                message: "password should be at least 6 character",
-              },
+              required: "Password is Required",
+              minLength: { value: 6, message: "Must Be 6 characters at least" },
             })}
           />
-          {errors.password && <p role="alert">{errors.password?.message}</p>}
-          <label className="label">
-            <span className="label-text">Forget Password?</span>
-          </label>
+          {errors.password && <p className="text-red-500">{errors.password.message}</p>}
 
           {/* include validation with required or other standard HTML validation rules */}
 
           {/* errors will return when field validation fails  */}
-          {errors.exampleRequired && <span>This field is required</span>}
 
-          <input className="btn btn-accent mt-4" type="submit" />
+          <input className="btn btn-accent mt-4" type="submit" value="Register" />
         </form>
-        {loginError && <p>{loginError}</p>}
         <div className="divider">OR</div>
         <button className="btn btn-outline btn-wide">Login with Google</button>
         <p>
-          New to Doctors Portal? <Link to="/signup">Sign Up</Link>
+          Already have an account? <Link to="/login">Sign In</Link>
         </p>
       </div>
     </div>
   );
 };
 
-export default Login;
+export default SignUp;
