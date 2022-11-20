@@ -1,5 +1,6 @@
 import React, { useContext } from "react";
 import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../../contexts/AuthProvider";
 
@@ -10,7 +11,7 @@ const SignUp = () => {
     formState: { errors },
   } = useForm();
 
-  const { createUser } = useContext(AuthContext);
+  const { user, createUser, updateUser } = useContext(AuthContext);
 
   const handleSignUp = (data) => {
     console.log(data);
@@ -18,8 +19,18 @@ const SignUp = () => {
       .then((res) => {
         const user = res.user;
         console.log(user);
+        toast("user created successfully");
+        const userInfo = {
+          displayName: data.name,
+        };
+        updateUser(userInfo)
+          .then(() => {
+            // console.log(user?.displayName);
+            console.log(user);
+          })
+          .catch((err) => console.log(err));
       })
-      .then((err) => console.log(err));
+      .catch((err) => console.log(err));
   };
   return (
     <div className="flex justify-center items-center">
